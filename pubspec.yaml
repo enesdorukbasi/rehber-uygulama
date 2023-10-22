@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.2 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -25,7 +25,8 @@ dependencies:
   image_picker: ^1.0.4
   permission_handler: ^11.0.1
   url_launcher: ^6.1.14
-  flutter_slidable: ^3.0.0
+  flutter_phone_direct_caller: ^2.1.1
+  draggable_home: ^1.0.5
 
 dev_dependencies:
   flutter_test:

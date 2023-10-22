@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   late final AuthBloc _authBloc;
   late final StreamSubscription _authStream;
+  bool isObscure = true;
 
   @override
   void initState() {
@@ -80,9 +81,18 @@ class _LoginPageState extends State<LoginPage> {
                   1.h.ph,
                   TextField(
                     controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+                    obscureText: isObscure,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isObscure = !isObscure;
+                          });
+                        },
+                        icon:
+                            Icon(isObscure ? Icons.remove_red_eye : Icons.lock),
+                      ),
+                      border: const OutlineInputBorder(),
                       hintText: "Parola",
                     ),
                   ),

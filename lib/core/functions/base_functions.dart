@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:enes_dorukbasi/ui_helpers/dialog_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BaseFunctions {
@@ -33,15 +34,20 @@ class BaseFunctions {
   }
 
   callNumber(String phoneNumber, BuildContext context) async {
-    final Uri smsLaunchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
-    if (await canLaunchUrl(smsLaunchUri)) {
-      await launchUrl(smsLaunchUri);
-    } else {
-      // ignore: use_build_context_synchronously
-      DialogWidget.faildDialog(context, "Şu an bu işlem gerçekleştirilemiyor.");
+    bool? res = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+    if (res == null || res == false) {
+      final Uri smsLaunchUri = Uri(
+        scheme: 'tel',
+        path: phoneNumber,
+      );
+      await launchUrl(Uri.parse("tel:$phoneNumber"));
+      if (await canLaunchUrl(smsLaunchUri)) {
+        await launchUrl(smsLaunchUri);
+      } else {
+        // ignore: use_build_context_synchronously
+        DialogWidget.faildDialog(
+            context, "Bu işlem cihaz tarafından desteklenmiyor olabilir.");
+      }
     }
   }
 
