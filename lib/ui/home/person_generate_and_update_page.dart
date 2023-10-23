@@ -4,12 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:enes_dorukbasi/core/bloc/person/person_bloc.dart';
 import 'package:enes_dorukbasi/core/functions/base_functions.dart';
 import 'package:enes_dorukbasi/core/models/cities_model.dart';
+import 'package:enes_dorukbasi/core/models/district_model.dart';
 import 'package:enes_dorukbasi/core/models/person_details_model.dart';
 import 'package:enes_dorukbasi/core/services/person/person_service.dart';
 import 'package:enes_dorukbasi/init/extensions/num_extensions.dart';
 import 'package:enes_dorukbasi/init/network/dio_manager.dart';
 import 'package:enes_dorukbasi/ui_helpers/dialog_widget.dart';
 import 'package:enes_dorukbasi/ui_helpers/formatters/textfield_formatters_for_phone.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,10 +50,11 @@ class _PersonGenerateAndUpdatePageState
   TextEditingController phoneController = TextEditingController();
   File? file;
   int? cityId;
+  int? districtId;
   int? genderId;
 
   List<Map<String, dynamic>> genderList = [
-    {"id": 0, "name": "Kadın"},
+    {"id": 2, "name": "Kadın"},
     {"id": 1, "name": "Erkek"},
   ];
 
@@ -63,6 +66,7 @@ class _PersonGenerateAndUpdatePageState
       nameSurnameController.text = widget.person!.kisiAd ?? "";
       phoneController.text = widget.person!.kisiTel ?? "";
       cityId = widget.person!.cityId;
+      districtId = widget.person!.townId;
       genderId = widget.person!.cinsiyet;
       _downloadAndSaveTemporaryImage();
     }
@@ -78,18 +82,22 @@ class _PersonGenerateAndUpdatePageState
         final bytes = response.data;
 
         // Geçici dosya yolu alınır
-        final tempDir = await Directory.systemTemp;
+        final tempDir = Directory.systemTemp;
         final tempFilePath = '${tempDir.path}/temporary_image.jpg';
 
         // Veriyi geçici dosyaya yazın
         file = File(tempFilePath);
         await file!.writeAsBytes(bytes);
-        print('Görüntü geçici dosyaya kaydedildi: ${file!.path}');
+        if (kDebugMode) {
+          print('Görüntü geçici dosyaya kaydedildi: ${file!.path}');
+        }
       } else {
         throw Exception('Görüntü indirilemedi: ${response.statusCode}');
       }
     } catch (e) {
-      print('Hata: $e');
+      if (kDebugMode) {
+        print('Hata: $e');
+      }
     }
   }
 
@@ -127,12 +135,14 @@ class _PersonGenerateAndUpdatePageState
                                             image: FileImage(file!),
                                             fit: BoxFit.fill,
                                           )
-                                        : DecorationImage(
-                                            image: NetworkImage(
-                                                DioManager.instance.fileUrl +
+                                        : widget.person!.resim == null
+                                            ? null
+                                            : DecorationImage(
+                                                image: NetworkImage(DioManager
+                                                        .instance.fileUrl +
                                                     widget.person!.resim!),
-                                            fit: BoxFit.fill,
-                                          ),
+                                                fit: BoxFit.fill,
+                                              ),
                                   )
                                 : const BoxDecoration(
                                     shape: BoxShape.circle,
@@ -299,6 +309,7 @@ class _PersonGenerateAndUpdatePageState
                         if (snapshot.data == null) {
                           return const SizedBox();
                         }
+
                         return Container(
                           width: 90.w,
                           padding: const EdgeInsets.symmetric(
@@ -323,6 +334,7 @@ class _PersonGenerateAndUpdatePageState
                               value: cityId,
                               onChanged: (newValue) {
                                 setState(() {
+                                  districtId = null;
                                   cityId = newValue;
                                 });
                               },
@@ -337,6 +349,62 @@ class _PersonGenerateAndUpdatePageState
                         );
                       }),
                   1.h.ph,
+                  (cityId != null)
+                      ? FutureBuilder<DistrictModel?>(
+                          future:
+                              PersonService().fetchAllDistrictByCityId(cityId!),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return BaseFunctions.instance.platformIndicator();
+                            }
+                            if (snapshot.data == null) {
+                              return const SizedBox();
+                            }
+                            if (snapshot.data!.ilceler!.first.cityId !=
+                                cityId) {
+                              return BaseFunctions.instance.platformIndicator();
+                            }
+                            return Container(
+                              width: 90.w,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border:
+                                    Border.all(color: Colors.black54, width: 1),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<int>(
+                                  icon: const Icon(
+                                    Icons.arrow_drop_down,
+                                    color: Colors.black54,
+                                  ),
+                                  hint: const Text(
+                                    "İlçe",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  isExpanded: true,
+                                  value: districtId,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      districtId = newValue;
+                                    });
+                                  },
+                                  items: snapshot.data!.ilceler!
+                                      .map((Ilceler city) {
+                                    return DropdownMenuItem<int>(
+                                      value: city.townId,
+                                      child: Text(city.townName!),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            );
+                          })
+                      : const SizedBox(),
+                  1.h.ph,
                   BlocBuilder<PersonBloc, PersonState>(
                     bloc: _personBloc,
                     builder: (context, state) {
@@ -349,10 +417,10 @@ class _PersonGenerateAndUpdatePageState
                                 UpdateOrGeneratePersonEvent(
                                   personId: widget.person!.kisiId!,
                                   cityId: cityId!,
-                                  townId: widget.person!.townId!,
+                                  districtId: districtId!,
                                   personName: nameSurnameController.text,
                                   personPhone: phoneController.text,
-                                  image: file ?? null,
+                                  image: file,
                                   context: context,
                                   personBloc: _personBloc,
                                   genderId: genderId!,
@@ -375,7 +443,7 @@ class _PersonGenerateAndUpdatePageState
                               _personBloc.add(UpdateOrGeneratePersonEvent(
                                   personId: 0,
                                   cityId: cityId!,
-                                  townId: 2527,
+                                  districtId: districtId!,
                                   personName: nameSurnameController.text,
                                   personPhone: phoneController.text,
                                   image: file!,

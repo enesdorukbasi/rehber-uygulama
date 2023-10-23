@@ -1,11 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:enes_dorukbasi/core/services/auth/auth_service.dart';
 import 'package:enes_dorukbasi/core/services/database/user_db_service.dart';
-import 'package:enes_dorukbasi/ui/home/home_page.dart';
 import 'package:enes_dorukbasi/ui_helpers/dialog_widget.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';

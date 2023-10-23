@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:io';
 
@@ -37,16 +37,17 @@ class PersonBloc extends Bloc<PersonEvent, PersonState> {
             } else {
               emit(PersonInitializeError(response["mesaj"]));
             }
-          } else {
-            emit(const PersonInitializeError("Bir sorun oluştu."));
-          }
+          } else {}
         } else {
           Navigator.of(event.context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const LoginPage()),
             (Route<dynamic> route) => false,
           );
         }
+      } on SocketException {
+        emit(const PersonInitializeError("Sunucu hatası."));
       } catch (ex) {
+        await DialogWidget.faildDialog(event.context, ex.toString());
         emit(const PersonInitializeError("Bir sorun oluştu."));
       }
     });
@@ -78,6 +79,8 @@ class PersonBloc extends Bloc<PersonEvent, PersonState> {
             (Route<dynamic> route) => false,
           );
         }
+      } on SocketException {
+        emit(const PersonInitializeError("Sunucu hatası."));
       } catch (ex) {
         emit(const PersonInitializeError("Bir sorun oluştu."));
       }
@@ -93,7 +96,7 @@ class PersonBloc extends Bloc<PersonEvent, PersonState> {
             password: profile["password"],
             personId: event.personId,
             cityId: event.cityId,
-            townId: event.townId,
+            townId: event.districtId,
             personName: event.personName,
             personPhone: event.personPhone,
             image: event.image,
@@ -122,6 +125,12 @@ class PersonBloc extends Bloc<PersonEvent, PersonState> {
             (Route<dynamic> route) => false,
           );
         }
+      } on SocketException {
+        emit(const PersonInitializeError("Sunucu hatası."));
+        await DialogWidget.faildDialog(
+          event.context,
+          "Sunucu hatası.",
+        );
       } catch (ex) {
         await DialogWidget.faildDialog(event.context, "Bir sorun oluştu.");
         emit(const PersonInitializeError("Bir sorun oluştu."));
@@ -160,6 +169,11 @@ class PersonBloc extends Bloc<PersonEvent, PersonState> {
             (Route<dynamic> route) => false,
           );
         }
+      } on SocketException {
+        await DialogWidget.faildDialog(
+          event.context,
+          "Sunucu hatası.",
+        );
       } catch (ex) {
         await DialogWidget.faildDialog(
           event.context,

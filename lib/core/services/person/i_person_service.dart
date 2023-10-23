@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:enes_dorukbasi/core/models/cities_model.dart';
-import 'package:enes_dorukbasi/core/models/person_details_model.dart';
-import 'package:enes_dorukbasi/core/models/persons_model.dart';
+import 'package:enes_dorukbasi/core/models/district_model.dart';
 
 abstract class IPersonService {
   Future<dynamic> fetchAllPerson(
@@ -13,7 +12,7 @@ abstract class IPersonService {
       int? genderId,
       String? personName});
   Future<CitiesModel?> fetchAllCities();
-  Future<void> fetchAllDistrictByCityId(int cityId);
+  Future<DistrictModel?> fetchAllDistrictByCityId(int cityId);
   Future<dynamic> fetchPersonDetails(
       {required String mail, required String password, required int personId});
   Future<dynamic> updateOrGeneratePerson(

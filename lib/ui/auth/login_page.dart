@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:async';
 
 import 'package:enes_dorukbasi/core/bloc/auth/auth_bloc.dart';

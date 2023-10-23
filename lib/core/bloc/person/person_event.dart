@@ -10,6 +10,7 @@ sealed class PersonEvent extends Equatable {
 class FetchAllPersonEvent extends PersonEvent {
   final int? page;
   final int? cityId;
+  final int? districtId;
   final int? genderId;
   final String? personName;
   final BuildContext context;
@@ -17,12 +18,14 @@ class FetchAllPersonEvent extends PersonEvent {
   const FetchAllPersonEvent(
       {this.page,
       this.cityId,
+      this.districtId,
       this.genderId,
       this.personName,
       required this.context});
 
   @override
-  List<Object> get props => [page!, cityId!, genderId!, personName!, context];
+  List<Object> get props =>
+      [page!, cityId!, districtId!, genderId!, personName!, context];
 }
 
 class FetchPersonDetailsEvent extends PersonEvent {
@@ -38,7 +41,7 @@ class FetchPersonDetailsEvent extends PersonEvent {
 class UpdateOrGeneratePersonEvent extends PersonEvent {
   final int personId;
   final int cityId;
-  final int townId;
+  final int districtId;
   final String personName;
   final String personPhone;
   final File? image;
@@ -53,7 +56,7 @@ class UpdateOrGeneratePersonEvent extends PersonEvent {
   const UpdateOrGeneratePersonEvent({
     required this.personId,
     required this.cityId,
-    required this.townId,
+    required this.districtId,
     required this.personName,
     required this.personPhone,
     required this.image,
@@ -70,7 +73,7 @@ class UpdateOrGeneratePersonEvent extends PersonEvent {
   List<Object> get props => [
         personId,
         cityId,
-        townId,
+        districtId,
         personName,
         personPhone,
         context,
@@ -85,11 +88,19 @@ class DeletePersonEvent extends PersonEvent {
   final PersonBloc personBloc;
   final int pageNumber;
   final int? cityId;
+  final int? districtId;
   final int? genderId;
   final String? personName;
 
-  const DeletePersonEvent(this.personId, this.context, this.personBloc,
-      this.pageNumber, this.cityId, this.genderId, this.personName);
+  const DeletePersonEvent(
+      this.personId,
+      this.context,
+      this.personBloc,
+      this.pageNumber,
+      this.cityId,
+      this.genderId,
+      this.personName,
+      this.districtId);
 
   @override
   List<Object> get props => [
@@ -98,6 +109,7 @@ class DeletePersonEvent extends PersonEvent {
         personBloc,
         pageNumber,
         cityId!,
+        districtId!,
         genderId!,
         personName!
       ];

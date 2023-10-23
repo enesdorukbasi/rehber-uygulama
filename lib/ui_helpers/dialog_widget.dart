@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -7,10 +9,9 @@ class DialogWidget {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        Future.delayed(
-          const Duration(seconds: 2),
-          () => Navigator.pop(context),
-        );
+        Timer(const Duration(seconds: 1), () {
+          Navigator.pop(context);
+        });
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Container(

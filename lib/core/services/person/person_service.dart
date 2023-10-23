@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:enes_dorukbasi/core/models/cities_model.dart';
-import 'package:enes_dorukbasi/core/models/person_details_model.dart';
+import 'package:enes_dorukbasi/core/models/district_model.dart';
 import 'package:enes_dorukbasi/core/services/person/i_person_service.dart';
 import 'package:enes_dorukbasi/init/network/dio_manager.dart';
 
@@ -19,7 +19,7 @@ class PersonService extends IPersonService {
   }
 
   @override
-  Future<void> fetchAllDistrictByCityId(int cityId) async {
+  Future<DistrictModel?> fetchAllDistrictByCityId(int cityId) async {
     var response = await DioManager.instance.dio.post(
       "ilceler",
       queryParameters: {
@@ -27,8 +27,8 @@ class PersonService extends IPersonService {
       },
     );
 
-    if (response.data["success"] == 1) {
-      return null;
+    if (response.data["basari"] == 1) {
+      return DistrictModel.fromJson(response.data);
     } else {
       return null;
     }

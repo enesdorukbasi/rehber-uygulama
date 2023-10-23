@@ -5,12 +5,10 @@ import 'package:enes_dorukbasi/core/functions/base_functions.dart';
 import 'package:enes_dorukbasi/init/extensions/num_extensions.dart';
 import 'package:enes_dorukbasi/init/network/dio_manager.dart';
 import 'package:enes_dorukbasi/ui/home/person_generate_and_update_page.dart';
-import 'package:enes_dorukbasi/ui_helpers/dialog_widget.dart';
-import 'package:fade_scroll_app_bar/fade_scroll_app_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PersonDetailsPage extends StatefulWidget {
   const PersonDetailsPage({
@@ -18,6 +16,7 @@ class PersonDetailsPage extends StatefulWidget {
     required this.personId,
     required this.pageNumber,
     this.cityId,
+    this.districtId,
     this.genderId,
     this.personName,
   });
@@ -25,6 +24,7 @@ class PersonDetailsPage extends StatefulWidget {
   final int personId;
   final int pageNumber;
   final int? cityId;
+  final int? districtId;
   final int? genderId;
   final String? personName;
 
@@ -52,7 +52,9 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
           titleEnabled = true;
         });
       }
-      print(_scrollController.offset);
+      if (kDebugMode) {
+        print(_scrollController.offset);
+      }
     });
   }
 
@@ -161,7 +163,22 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                     body: _body(state))
                 : (state is PersonInitializeError)
                     ? Center(
-                        child: Text(state.message),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(state.message),
+                            TextButton(
+                                onPressed: () {
+                                  _personBloc.add(
+                                    FetchAllPersonEvent(
+                                        context: context,
+                                        page: widget.pageNumber),
+                                  );
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Geri Dön"))
+                          ],
+                        ),
                       )
                     : BaseFunctions.instance.platformIndicator(),
           ),
@@ -196,6 +213,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
                     widget.cityId,
                     widget.genderId,
                     widget.personName,
+                    widget.districtId,
                   ),
                 );
               },

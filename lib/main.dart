@@ -22,11 +22,11 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, screenType) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
+          title: 'Enes Dorukbaşı',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: LoginPage(),
+          home: const LoginPage(),
         );
       },
     );

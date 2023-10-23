@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final PersonBloc _personBloc;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isInitialPage = false;
   bool titleEnabled = false;
   TextEditingController filterNameController = TextEditingController();
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   int currentPage = 1;
 
   List<Map<String, dynamic>> genderList = [
-    {"id": 0, "name": "Kadın"},
+    {"id": 2, "name": "Kadın"},
     {"id": 1, "name": "Erkek"},
   ];
 
@@ -53,7 +53,6 @@ class _HomePageState extends State<HomePage> {
           titleEnabled = true;
         });
       }
-      print(_scrollController.offset);
     });
   }
 
@@ -123,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                                                   Container(
                                                     width: 90.w,
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         horizontal: 12,
                                                         vertical: 4),
                                                     decoration: BoxDecoration(
@@ -187,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                                                           width: 90.w,
                                                           padding:
                                                               const EdgeInsets
-                                                                      .symmetric(
+                                                                  .symmetric(
                                                                   horizontal:
                                                                       12,
                                                                   vertical: 4),
